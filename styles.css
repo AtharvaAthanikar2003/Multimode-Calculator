@@ -170,7 +170,7 @@ button:hover {
 
 .full-equals {
   grid-column: span 4;
-  padding: 15px;
+  padding: 10px 222px;
 }
 
 /* Input & AC Button Container */
@@ -295,7 +295,7 @@ button:hover {
 
 .currency-btn {
   flex: 1 1 auto;
-  min-width: 120px;
+  min-width: 100px;
   padding: 10px 15px;
   background-color: #007bff;
   color: white;
@@ -307,6 +307,7 @@ button:hover {
   white-space: nowrap;
   text-align: center;
 }
+
 .currency-btn:hover {
   background-color: #0056b3;
 }
