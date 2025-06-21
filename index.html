@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Mode Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<header class="main-header">
+  <h1>Multimode Calculator</h1>
+</header>
+<body class="light-mode">
+  <div class="theme-toggle">
+    <label><input type="checkbox" id="themeSwitch"/> Dark Mode</label>
+  </div>
+
+  <div class="calculator-container">
+    <div class="mode-buttons">
+      <button onclick="switchMode('standard')">Standard</button>
+      <button onclick="switchMode('scientific')">Scientific</button>
+      <button onclick="switchMode('computer')">Computer</button>
+      <button onclick="switchMode('currency')">Currency</button>
+    </div>
+
+    <!-- Standard Mode -->
+    <div id="standard" class="calculator active">
+    <input type="text" id="standard-display" class="display" />
+    <div class="buttons">
+        <button onclick="append('7')">7</button>
+        <button onclick="append('8')">8</button>
+        <button onclick="append('9')">9</button>
+        <button onclick="clearDisplay()" class="clear-btn">AC</button>
+
+        <button onclick="append('4')">4</button>
+        <button onclick="append('5')">5</button>
+        <button onclick="append('6')">6</button>
+        <button onclick="append('*')">*</button>
+
+        <button onclick="append('1')">1</button>
+        <button onclick="append('2')">2</button>
+        <button onclick="append('3')">3</button>
+        <button onclick="append('-')">-</button>
+
+        <button onclick="append('0')">0</button>
+        <button onclick="append('.')">.</button>
+        <button onclick="append('/')">÷</button>
+
+        <button onclick="append('+')">+</button>
+        
+        <button onclick="calculate()" class="equals full-equals">=</button>
+    </div>
+    </div>
+
+    <!-- Scientific Mode -->
+    <div id="scientific" class="calculator">
+      <input type="text" id="sci-display" class="display" />
+      <div class="buttons">
+        <!-- Standard numeric buttons -->
+        <button onclick="appendSci('7')">7</button>
+        <button onclick="appendSci('8')">8</button>
+        <button onclick="appendSci('9')">9</button>
+        <button onclick="appendSci('/')">÷</button>
+
+        <button onclick="appendSci('4')">4</button>
+        <button onclick="appendSci('5')">5</button>
+        <button onclick="appendSci('6')">6</button>
+        <button onclick="appendSci('*')">×</button>
+
+        <button onclick="appendSci('1')">1</button>
+        <button onclick="appendSci('2')">2</button>
+        <button onclick="appendSci('3')">3</button>
+        <button onclick="appendSci('-')">−</button>
+
+        <button onclick="appendSci('0')">0</button>
+        <button onclick="appendSci('.')">.</button>
+        <button onclick="appendSci('%')">%</button>
+        <button onclick="appendSci('+')">+</button>
+
+        <!-- Scientific operations -->
+        <button onclick="appendSci('Math.PI')">π</button>
+        <button onclick="appendSci('Math.sqrt(')">√</button>
+        <button onclick="appendSci('**2')">x²</button>
+        <button onclick="appendSci('**')">^</button>         
+        <button onclick="appendSci('Math.sin(')">sin</button>
+        <button onclick="appendSci('Math.cos(')">cos</button>
+        <button onclick="appendSci('Math.tan(')">tan</button>
+        <button onclick="appendSci('Math.log(')">log</button>
+        <button onclick="appendSci('(')">(</button>
+        <button onclick="appendSci(')')">)</button>
+        <button onclick="clearEntrySci()" class="clear-btn">C</button>
+        <button onclick="clearSci()" class="clear-btn">AC</button>
+        <button onclick="calculateSci()" class="equals full-equals">=</button>
+      </div>
+    </div>
+
+    <!-- Computer (Base Conversion) Mode -->
+    <div id="computer" class="calculator">
+    <div class="input-clear-wrap">
+      <input type="text" id="comp-display" placeholder="Enter the Decimal Number" />
+      <button class="clear-btn small-clear" onclick="clearComputer()">AC</button>
+    </div>
+
+      <div class="buttons">
+        <button class="green-btn" onclick="convertBase('bin')">Binary</button>
+        <button class="green-btn" onclick="convertBase('oct')">Octal</button>
+        <button class="green-btn" onclick="convertBase('dec')">Decimal</button>
+        <button class="green-btn" onclick="convertBase('hex')">Hexadecimal</button>
+      </div>
+    </div>
+
+    <!-- Currency Conversion Mode -->
+    <div id="currency" class="calculator">
+    <div class="input-clear-wrap">
+      <input type="number" id="currency-amount" placeholder="Enter the amount (In USD)">
+      <button class="clear-btn small-clear" onclick="clearCurrency()">AC</button>
+    </div>
+    <div id="currency-buttons" class="currency-btn-group">
+      <button type="button" class="currency-btn" data-currency="inr">INR (Indian Rupee)</button>
+      <button type="button" class="currency-btn" data-currency="eur">EUR (Euros)</button>
+      <button type="button" class="currency-btn" data-currency="gbp">GBP (British Pound)</button>
+      <button type="button" class="currency-btn" data-currency="aud">AUD (Australian Dollar)</button>
+      <button type="button" class="currency-btn" data-currency="cad">CAD (Canadian Dollar)</button>
+      <button type="button" class="currency-btn" data-currency="dkk">DKK (Danish Krone)</button>
+      <button type="button" class="currency-btn" data-currency="jpy">JPY (Japanese Yen)</button>
+    </div>
+      <button onclick="convertCurrencyStatic()" class="equals full-equals">Convert</button>
+      <p id="currency-result"></p>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+    <footer class="main-footer">
+        <p>Atharva Athanikar © All rights reserved </p>
+    </footer>
+</html>
