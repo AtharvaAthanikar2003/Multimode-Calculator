@@ -172,7 +172,7 @@ document.getElementById("sci-display").addEventListener("input", function () {
 });
 
 // =======================
-// COMPUTER (BASE CONVERSION)
+// Programmer (BASE CONVERSION)
 // =======================
 let originalDecimal = "";
 
@@ -206,7 +206,7 @@ function convertBase(type) {
   }
 }
 
-function clearComputer() {
+function clearProgrammer() {
   document.getElementById("comp-display").value = "";
   originalDecimal = "";
 }
