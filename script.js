@@ -1,55 +1,74 @@
-// Theme Toggle
-document.getElementById("themeSwitch").addEventListener("change", function() {
+// =======================
+// THEME TOGGLE
+// =======================
+document.getElementById("themeSwitch").addEventListener("change", function () {
   document.body.classList.toggle("dark-mode");
   document.body.classList.toggle("light-mode");
 });
 
-// Switch Views
+// =======================
+// SWITCH BETWEEN MODES
+// =======================
 function switchMode(mode) {
   document.querySelectorAll('.calculator').forEach(el => el.classList.remove('active'));
   document.getElementById(mode).classList.add('active');
 }
 
-// Standard Mode
+// =======================
+// STANDARD MODE
+// =======================
 function append(val) {
   document.getElementById("standard-display").value += val;
 }
+
+function appendPi() {
+  document.getElementById("standard-display").value += "π";
+}
+
+function appendE() {
+  document.getElementById("standard-display").value += "e";
+}
+
+function appendReciprocal() {
+  document.getElementById("standard-display").value += "1/(";
+}
+
 function calculate() {
   try {
-    document.getElementById("standard-display").value = eval(document.getElementById("standard-display").value);
+    let expr = document.getElementById("standard-display").value;
+
+    // Replace symbols with actual values
+    expr = expr.replace(/π/g, Math.PI).replace(/e/g, Math.E);
+
+    // Auto-close brackets
+    const openBrackets = (expr.match(/\(/g) || []).length;
+    const closeBrackets = (expr.match(/\)/g) || []).length;
+    const missing = openBrackets - closeBrackets;
+    if (missing > 0) expr += ")".repeat(missing);
+
+    document.getElementById("standard-display").value = eval(expr);
   } catch {
     alert("Invalid Expression");
   }
 }
+
 function clearDisplay() {
   document.getElementById("standard-display").value = "";
 }
 
-// Scientific Mode
+// =======================
+// SCIENTIFIC MODE
+// =======================
 let sciDisplayStr = "";
 let sciEvalStr = "";
 
-// Function to sanitize user-friendly input for JavaScript eval
-function sanitizeScientificInput(input) {
-  return input
-    .replace(/π/g, "Math.PI")
-    .replace(/√\(/g, "Math.sqrt(")
-    .replace(/sin\(/g, "Math.sin(")
-    .replace(/cos\(/g, "Math.cos(")
-    .replace(/tan\(/g, "Math.tan(")
-    .replace(/log\(/g, "Math.log(")
-    .replace(/÷/g, "/")
-    .replace(/×/g, "*")
-    .replace(/\^/g, "**")
-    .replace(/%/g, "/100");
-}
-
 function appendSci(val) {
+  // Map JS eval functions to user-friendly display strings
   const funcMap = {
     "Math.sin(": "sin(",
     "Math.cos(": "cos(",
     "Math.tan(": "tan(",
-    "Math.log(": "log(",
+    "Math.log10(": "log(",
     "Math.sqrt(": "√(",
   };
 
@@ -63,14 +82,68 @@ function appendSci(val) {
     sciDisplayStr += val;
     sciEvalStr += val;
   }
-
   document.getElementById("sci-display").value = sciDisplayStr;
+}
+
+function sanitizeScientificInput(input) {
+  // Insert multiplication where implied
+  input = input.replace(/(\d)(π|e|\()/g, '$1*$2');
+
+  return input
+    .replace(/π/g, "Math.PI")
+    .replace(/e/g, "Math.E")
+    .replace(/√\(/g, "Math.sqrt(")
+    .replace(/sin\(([^)]+)\)/g, "Math.sin(($1) * Math.PI / 180)")
+    .replace(/cos\(([^)]+)\)/g, "Math.cos(($1) * Math.PI / 180)")
+    .replace(/tan\(([^)]+)\)/g, "Math.tan(($1) * Math.PI / 180)")
+    .replace(/log\(/g, "Math.log10(")  // keep log as base 10 for eval
+    .replace(/÷/g, "/")
+    .replace(/×/g, "*")
+    .replace(/\^/g, "**")
+    .replace(/%/g, "/100");
+}
+
+// Check for undefined trig values like tan(90)
+function isUndefinedTrig(expr) {
+  const degRegex = /(tan|cot|sec|cosec)\(([^)]+)\)/g;
+  let match;
+  while ((match = degRegex.exec(expr)) !== null) {
+    const func = match[1];
+    const argDeg = parseFloat(match[2]);
+    const angle = ((argDeg % 360) + 360) % 360; // normalize
+
+    if (
+      (func === "tan" && (angle === 90 || angle === 270)) ||
+      (func === "cot" && (angle === 0 || angle === 180 || angle === 360)) ||
+      (func === "sec" && (angle === 90 || angle === 270)) ||
+      (func === "cosec" && (angle === 0 || angle === 180 || angle === 360))
+    ) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function calculateSci() {
   try {
+    if (isUndefinedTrig(sciDisplayStr)) {
+      document.getElementById("sci-display").value = "Undefined";
+      sciDisplayStr = "";
+      sciEvalStr = "";
+      return;
+    }
+
     const sanitized = sanitizeScientificInput(sciDisplayStr);
-    const result = eval(sanitized);
+    let result = eval(sanitized);
+
+    // If result is +/- Infinity, show 'Undefined'
+    if (result === Infinity || result === -Infinity) {
+      document.getElementById("sci-display").value = "Undefined";
+      sciDisplayStr = "";
+      sciEvalStr = "";
+      return;
+    }
+
     sciDisplayStr = result.toString();
     sciEvalStr = result.toString();
     document.getElementById("sci-display").value = sciDisplayStr;
@@ -93,20 +166,19 @@ function clearSci() {
   document.getElementById("sci-display").value = "";
 }
 
-// Listen to manual typing and sync both strings
 document.getElementById("sci-display").addEventListener("input", function () {
   sciDisplayStr = this.value;
   sciEvalStr = sanitizeScientificInput(this.value);
 });
 
-
-// Computer (Base Conversion)
-let originalDecimal = ""; // Store original decimal value
+// =======================
+// COMPUTER (BASE CONVERSION)
+// =======================
+let originalDecimal = "";
 
 function convertBase(type) {
   const input = document.getElementById("comp-display");
 
-  // If originalDecimal is empty, validate and save current input as decimal
   if (!originalDecimal) {
     let val = input.value.trim();
     if (!/^\d+$/.test(val)) {
@@ -116,7 +188,6 @@ function convertBase(type) {
     originalDecimal = val;
   }
 
-  // Convert based on stored originalDecimal value, never from current input.value
   const number = parseInt(originalDecimal, 10);
 
   switch (type) {
@@ -140,15 +211,15 @@ function clearComputer() {
   originalDecimal = "";
 }
 
-// Static conversion
-// Attach click handlers after DOM loaded or script placed at bottom
+// =======================
+// CURRENCY CONVERSION
+// =======================
+let selectedCurrency = "inr"; // default currency
+
 document.querySelectorAll('.currency-btn').forEach(button => {
   button.addEventListener('click', () => {
-    // Remove active class from all buttons
     document.querySelectorAll('.currency-btn').forEach(btn => btn.classList.remove('active'));
-    // Add active to clicked button
     button.classList.add('active');
-    // Update selected currency
     selectedCurrency = button.getAttribute('data-currency');
   });
 });
@@ -157,10 +228,20 @@ function convertCurrencyStatic() {
   const amt = parseFloat(document.getElementById("currency-amount").value);
   if (isNaN(amt)) return alert("Enter a valid amount");
 
-  const rates = { inr: 86.6, eur: 0.87, gbp: 0.75, aud: 1.54, cad: 1.37, dkk: 6.5, jpy: 146.2};
-  const rate = rates[selectedCurrency];
-  const converted = (amt * rate).toFixed(2);
+  const rates = {
+    inr: 86.6,
+    eur: 0.87,
+    gbp: 0.75,
+    aud: 1.54,
+    cad: 1.37,
+    dkk: 6.5,
+    jpy: 146.2
+  };
 
+  const rate = rates[selectedCurrency];
+  if (!rate) return alert("Please select a currency");
+
+  const converted = (amt * rate).toFixed(2);
   document.getElementById("currency-result").innerText =
     `${amt} USD = ${converted} ${selectedCurrency.toUpperCase()}`;
 }
@@ -170,18 +251,31 @@ function clearCurrency() {
   document.getElementById("currency-result").innerText = "";
 }
 
-// Trigger calculation when Enter key is pressed in standard input
+// =======================
+// ENTER KEY LISTENERS
+// =======================
 document.getElementById("standard-display").addEventListener("keydown", function (e) {
   if (e.key === "Enter") {
     e.preventDefault();
-    calculate(); // Correct function for standard mode
+    calculate();
   }
 });
 
-// Trigger calculation when Enter key is pressed in scientific input
 document.getElementById("sci-display").addEventListener("keydown", function (e) {
   if (e.key === "Enter") {
     e.preventDefault();
-    calculateSci(); // Correct function for scientific mode
+    calculateSci();
+  }
+});
+document.getElementById("comp-display").addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    convertBase('dec');
+  }
+});
+document.getElementById("currency-amount").addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    convertCurrencyStatic();
   }
 });

@@ -45,9 +45,12 @@
         <button onclick="append('0')">0</button>
         <button onclick="append('.')">.</button>
         <button onclick="append('/')">÷</button>
-
         <button onclick="append('+')">+</button>
-        
+
+        <button onclick="appendPi()">π</button>
+        <button onclick="appendE()">e</button>
+        <button onclick="append('%')">%</button>
+        <button onclick="appendReciprocal()">1/x</button>
         <button onclick="calculate()" class="equals full-equals">=</button>
     </div>
     </div>
@@ -77,11 +80,11 @@
         <button onclick="appendSci('%')">%</button>
         <button onclick="appendSci('+')">+</button>
 
-        <!-- Scientific operations -->
-        <button onclick="appendSci('Math.PI')">π</button>
+        <!-- Scientific operations -->      
         <button onclick="appendSci('Math.sqrt(')">√</button>
         <button onclick="appendSci('**2')">x²</button>
-        <button onclick="appendSci('**')">^</button>         
+        <button onclick="appendSci('**')">^</button>
+        <button onclick="appendSci('1/(')">1/x</button>
         <button onclick="appendSci('Math.sin(')">sin</button>
         <button onclick="appendSci('Math.cos(')">cos</button>
         <button onclick="appendSci('Math.tan(')">tan</button>
